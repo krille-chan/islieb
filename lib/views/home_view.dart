@@ -126,6 +126,25 @@ class _HomeViewState extends State<HomeView> {
                                     Map<String, String> attributes, _) =>
                                 url == null ? null : launchUrlString(url),
                             style: AppThemes.htmlStyle,
+                            customRender: {
+                              'audio': (context, parsedChild) => OutlinedButton(
+                                    onPressed: () => launchUrlString(
+                                        context.tree.attributes['src']!),
+                                    child: const Text('Audio abspielen'),
+                                  ),
+                              'video': (context, parsedChild) => OutlinedButton(
+                                    onPressed: () => launchUrlString(
+                                        context.tree.attributes['src']!),
+                                    child: const Text('Video abspielen'),
+                                  ),
+                              'iframe': (context, parsedChild) =>
+                                  OutlinedButton(
+                                    onPressed: () => launchUrlString(
+                                        context.tree.attributes['src']!),
+                                    child:
+                                        const Text('Externen Inhalt anzeigen'),
+                                  ),
+                            },
                           ),
                         ),
                       );
