@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -127,6 +128,24 @@ class _HomeViewState extends State<HomeView> {
                                 url == null ? null : launchUrlString(url),
                             style: AppThemes.htmlStyle,
                             customRender: {
+                              'img': (context, parsedChild) =>
+                                  CachedNetworkImage(
+                                    imageUrl: context.tree.attributes['src']!,
+                                    fit: BoxFit.fitWidth,
+                                    errorWidget: (_, __, ___) => const SizedBox(
+                                      height: 256,
+                                      child: Center(
+                                        child: Icon(Icons.wifi_off_outlined),
+                                      ),
+                                    ),
+                                    placeholder: (_, __) => const SizedBox(
+                                      height: 256,
+                                      child: Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive(),
+                                      ),
+                                    ),
+                                  ),
                               'audio': (context, parsedChild) => OutlinedButton(
                                     onPressed: () => launchUrlString(
                                         context.tree.attributes['src']!),
@@ -249,7 +268,9 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       const Spacer(),
                       TextButton(
-                        onPressed: canSwipe
+                        onPressed: (!_pageController.hasClients &&
+                                    items.isNotEmpty) ||
+                                canSwipe
                             ? () => _pageController.nextPage(
                                   duration: const Duration(milliseconds: 200),
                                   curve: Curves.bounceInOut,

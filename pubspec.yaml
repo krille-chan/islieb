@@ -7,6 +7,7 @@ environment:
   sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
+  cached_network_image: ^3.2.0
   flutter:
     sdk: flutter
   flutter_html: ^2.2.1
