@@ -6,6 +6,7 @@ import 'package:islieb/widgets/islieb_app.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
+  log('Welcome to islieb Comic Reader app logs :-) <3');
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp();

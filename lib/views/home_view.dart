@@ -67,7 +67,12 @@ class _HomeViewState extends State<HomeView> {
             style: AppThemes.htmlStyle,
             onLinkTap: (String? url, RenderContext context,
                     Map<String, String> attributes, _) =>
-                url == null ? null : launchUrlString(url),
+                url == null
+                    ? null
+                    : launchUrlString(
+                        url,
+                        mode: LaunchMode.externalApplication,
+                      ),
             data:
                 '<p>Comics and contents by <a href="https://islieb.de">islieb</a>.</p><p>App created with love by <a href="https://krillefear.gitlab.io">Krille Fear</a>.</p>',
           ),
@@ -125,7 +130,12 @@ class _HomeViewState extends State<HomeView> {
                             data: item.content?.value ?? '',
                             onLinkTap: (String? url, RenderContext context,
                                     Map<String, String> attributes, _) =>
-                                url == null ? null : launchUrlString(url),
+                                url == null
+                                    ? null
+                                    : launchUrlString(
+                                        url,
+                                        mode: LaunchMode.externalApplication,
+                                      ),
                             style: AppThemes.htmlStyle,
                             customRender: {
                               'img': (context, parsedChild) =>
@@ -148,18 +158,24 @@ class _HomeViewState extends State<HomeView> {
                                   ),
                               'audio': (context, parsedChild) => OutlinedButton(
                                     onPressed: () => launchUrlString(
-                                        context.tree.attributes['src']!),
+                                      context.tree.attributes['src']!,
+                                      mode: LaunchMode.externalApplication,
+                                    ),
                                     child: const Text('Audio abspielen'),
                                   ),
                               'video': (context, parsedChild) => OutlinedButton(
                                     onPressed: () => launchUrlString(
-                                        context.tree.attributes['src']!),
+                                      context.tree.attributes['src']!,
+                                      mode: LaunchMode.externalApplication,
+                                    ),
                                     child: const Text('Video abspielen'),
                                   ),
                               'iframe': (context, parsedChild) =>
                                   OutlinedButton(
                                     onPressed: () => launchUrlString(
-                                        context.tree.attributes['src']!),
+                                      context.tree.attributes['src']!,
+                                      mode: LaunchMode.externalApplication,
+                                    ),
                                     child:
                                         const Text('Externen Inhalt anzeigen'),
                                   ),
@@ -203,8 +219,10 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             ),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  launchUrlString(AppConstants.website),
+                              onPressed: () => launchUrlString(
+                                AppConstants.website,
+                                mode: LaunchMode.externalApplication,
+                              ),
                               label: const Text(AppConstants.website),
                               icon: const Icon(Icons.open_in_new),
                             ),
