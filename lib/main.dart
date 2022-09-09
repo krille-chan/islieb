@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:islieb/model/islieb_reader.dart';
 import 'package:islieb/widgets/islieb_app.dart';
@@ -10,6 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp();
+    if (Platform.isIOS) {
+      FirebaseMessaging.instance.requestPermission();
+    }
   } catch (e, s) {
     log(
       'Unable to initialize Firebase App!',
