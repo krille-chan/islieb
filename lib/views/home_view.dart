@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:webfeed/domain/rss_item.dart';
 
 import 'package:islieb/configs/app_assets.dart';
 import 'package:islieb/configs/app_constants.dart';
@@ -23,6 +24,8 @@ class _HomeViewState extends State<HomeView> {
   final PageController _pageController = PageController();
 
   bool displayBackButton = false;
+
+  bool searchMode = false;
 
   bool get canSwipe =>
       _pageController.hasClients &&
@@ -92,85 +95,184 @@ class _HomeViewState extends State<HomeView> {
                       final pubDate = item.pubDate;
                       return Scaffold(
                         appBar: AppBar(
-                          title: Text(item.title ?? 'Ohne Titel'),
-                          actions: [
-                            if (pubDate != null)
-                              Center(
-                                child: Text(pubDate.getLocalizedDate(context)),
-                              ),
-                            IconButton(
-                              icon: Icon(Icons.adaptive.share_outlined),
-                              onPressed: () => SharePlus.instance.share(
-                                ShareParams(
-                                  title:
-                                      item.title ??
-                                      AppConstants.applicationName,
-                                  uri: Uri.tryParse(
-                                    (item.content?.images.isNotEmpty ?? false
-                                            ? item.content?.images.first
-                                            : null) ??
-                                        item.link ??
-                                        '',
-                                  ),
+                          title: searchMode
+                              ? Autocomplete<(int, RssItem)>(
+                                  optionsBuilder: (text) {
+                                    final query = text.text.toLowerCase();
+                                    return items.where((item) {
+                                      final content =
+                                          (item.content?.value ?? '') +
+                                          (item.title ?? '') +
+                                          (item.pubDate?.toIso8601String() ??
+                                              '');
+                                      return content.toLowerCase().contains(
+                                        query,
+                                      );
+                                    }).indexed;
+                                  },
+                                  displayStringForOption: (item) =>
+                                      item.$2.title ?? 'No title',
+                                  onSelected: (item) {
+                                    _pageController.jumpToPage(item.$1);
+                                    setState(() {
+                                      searchMode = false;
+                                    });
+                                  },
+                                  fieldViewBuilder:
+                                      (context, textController, focusNode, _) {
+                                        return TextField(
+                                          autofocus: true,
+                                          controller: textController,
+                                          focusNode: focusNode,
+                                          decoration: InputDecoration(
+                                            contentPadding: EdgeInsets.all(8.0),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(32),
+                                            ),
+                                            prefixIcon: Icon(
+                                              Icons.search_outlined,
+                                            ),
+                                            suffixIcon: CloseButton(
+                                              onPressed: () => setState(() {
+                                                searchMode = false;
+                                              }),
+                                            ),
+                                            hintText: MaterialLocalizations.of(
+                                              context,
+                                            ).searchFieldLabel,
+                                            filled: true,
+                                            fillColor: Theme.of(
+                                              context,
+                                            ).colorScheme.surfaceBright,
+                                          ),
+                                        );
+                                      },
+                                )
+                              : Row(
+                                  children: [
+                                    Text(item.title ?? 'Ohne Titel'),
+                                    SizedBox(width: 8),
+                                    if (pubDate != null)
+                                      Text(
+                                        pubDate.getLocalizedDate(context),
+                                        style: TextStyle(fontSize: 11),
+                                      ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.info_outlined),
-                              onPressed: _infoButtonAction,
-                            ),
-                          ],
+                          actions: searchMode
+                              ? null
+                              : [
+                                  IconButton(
+                                    icon: Icon(Icons.search_outlined),
+                                    tooltip: MaterialLocalizations.of(
+                                      context,
+                                    ).searchFieldLabel,
+                                    onPressed: () => setState(() {
+                                      searchMode = true;
+                                    }),
+                                  ),
+                                ],
                         ),
                         body: RefreshIndicator.adaptive(
                           onRefresh: () => isliebReader.loadRssFeed(),
-                          child: SingleChildScrollView(
-                            child: Html(
-                              data: item.content?.value ?? '',
-                              onLinkTap:
-                                  (
-                                    String? url,
-                                    Map<String, String> attributes,
-                                    _,
-                                  ) => url == null
-                                  ? null
-                                  : launchUrlString(
-                                      url,
-                                      mode: LaunchMode.externalApplication,
-                                    ),
-                              style: AppThemes.htmlStyle,
-                              extensions: [
-                                TagExtension(
-                                  tagsToExtend: {'img'},
-                                  builder: (context) => CachedNetworkImage(
-                                    imageUrl: context.attributes['src']!,
-                                    fit: BoxFit.fitWidth,
-                                    errorWidget: (_, _, _) => const SizedBox(
-                                      height: 256,
-                                      child: Center(
-                                        child: Icon(Icons.wifi_off_outlined),
+                          child: ListView(
+                            children: [
+                              Html(
+                                data: item.content?.value ?? '',
+                                onLinkTap:
+                                    (
+                                      String? url,
+                                      Map<String, String> attributes,
+                                      _,
+                                    ) => url == null
+                                    ? null
+                                    : launchUrlString(
+                                        url,
+                                        mode: LaunchMode.externalApplication,
                                       ),
-                                    ),
-                                    placeholder: (_, _) => const SizedBox(
-                                      height: 256,
-                                      child: Center(
-                                        child:
-                                            CircularProgressIndicator.adaptive(),
+                                style: AppThemes.htmlStyle,
+                                extensions: [
+                                  TagExtension(
+                                    tagsToExtend: {'img'},
+                                    builder: (context) => CachedNetworkImage(
+                                      imageUrl: context.attributes['src']!,
+                                      fit: BoxFit.fitWidth,
+                                      errorWidget: (_, _, _) => const SizedBox(
+                                        height: 256,
+                                        child: Center(
+                                          child: Icon(Icons.wifi_off_outlined),
+                                        ),
+                                      ),
+                                      placeholder: (_, _) => const SizedBox(
+                                        height: 256,
+                                        child: Center(
+                                          child:
+                                              CircularProgressIndicator.adaptive(),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                TagExtension(
-                                  tagsToExtend: {'audio', 'video', 'iframe'},
-                                  builder: (context) => OutlinedButton(
-                                    onPressed: () => launchUrlString(
-                                      context.attributes['src']!,
-                                      mode: LaunchMode.externalApplication,
+                                  TagExtension(
+                                    tagsToExtend: {'audio', 'video', 'iframe'},
+                                    builder: (context) => OutlinedButton(
+                                      onPressed: () => launchUrlString(
+                                        context.attributes['src']!,
+                                        mode: LaunchMode.externalApplication,
+                                      ),
+                                      child: const Text('Audio abspielen'),
                                     ),
-                                    child: const Text('Audio abspielen'),
                                   ),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Row(
+                                  mainAxisAlignment: .center,
+                                  spacing: 16,
+                                  children: [
+                                    IconButton(
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.secondaryContainer,
+                                        foregroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.onSecondaryContainer,
+                                      ),
+                                      icon: Icon(Icons.adaptive.share_outlined),
+                                      onPressed: () => SharePlus.instance.share(
+                                        ShareParams(
+                                          title:
+                                              item.title ??
+                                              AppConstants.applicationName,
+                                          uri: Uri.tryParse(
+                                            (item.content?.images.isNotEmpty ??
+                                                        false
+                                                    ? item.content?.images.first
+                                                    : null) ??
+                                                item.link ??
+                                                '',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.tertiaryContainer,
+                                        foregroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.onTertiaryContainer,
+                                      ),
+                                      icon: const Icon(Icons.info_outlined),
+                                      onPressed: _infoButtonAction,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -228,6 +330,9 @@ class _HomeViewState extends State<HomeView> {
                     children: [
                       if (displayBackButton)
                         FloatingActionButton(
+                          tooltip: MaterialLocalizations.of(
+                            context,
+                          ).previousPageTooltip,
                           mini: true,
                           onPressed: displayBackButton
                               ? () => _pageController.animateToPage(
@@ -241,6 +346,9 @@ class _HomeViewState extends State<HomeView> {
                       Spacer(),
                       FloatingActionButton(
                         mini: true,
+                        tooltip: MaterialLocalizations.of(
+                          context,
+                        ).nextPageTooltip,
                         onPressed:
                             (!_pageController.hasClients && items.isNotEmpty) ||
                                 canSwipe
