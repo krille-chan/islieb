@@ -61,7 +61,11 @@ class _HomeViewState extends State<HomeView> {
   void _infoButtonAction() => showAboutDialog(
     context: context,
     applicationName: AppConstants.applicationName,
-    applicationIcon: Image.asset(AppAssets.icon, width: 64, height: 64),
+    applicationIcon: Material(
+      clipBehavior: Clip.hardEdge,
+      shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      child: Image.asset(AppAssets.icon, width: 64, height: 64),
+    ),
     children: [
       Html(
         style: AppThemes.htmlStyle,
@@ -150,9 +154,21 @@ class _HomeViewState extends State<HomeView> {
                                       },
                                 )
                               : Row(
+                                  spacing: 12,
+                                  crossAxisAlignment: .center,
                                   children: [
+                                    Material(
+                                      clipBehavior: Clip.hardEdge,
+                                      shape: ContinuousRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                      child: Image.asset(
+                                        AppAssets.icon,
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                    ),
                                     Text(item.title ?? 'Ohne Titel'),
-                                    SizedBox(width: 8),
                                     if (pubDate != null)
                                       Text(
                                         pubDate.getLocalizedDate(context),
@@ -325,7 +341,7 @@ class _HomeViewState extends State<HomeView> {
                 floatingActionButtonLocation:
                     FloatingActionButtonLocation.miniCenterDocked,
                 floatingActionButton: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Row(
                     children: [
                       if (displayBackButton)
@@ -334,6 +350,12 @@ class _HomeViewState extends State<HomeView> {
                             context,
                           ).previousPageTooltip,
                           mini: true,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onPrimary,
                           onPressed: displayBackButton
                               ? () => _pageController.animateToPage(
                                   0,
@@ -349,6 +371,10 @@ class _HomeViewState extends State<HomeView> {
                         tooltip: MaterialLocalizations.of(
                           context,
                         ).nextPageTooltip,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimary,
                         onPressed:
                             (!_pageController.hasClients && items.isNotEmpty) ||
                                 canSwipe
