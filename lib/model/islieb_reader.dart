@@ -1,11 +1,13 @@
 import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:islieb/configs/app_constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:webfeed/webfeed.dart';
+
+import 'package:islieb/configs/app_constants.dart';
 
 class IsliebReader {
   final Box<String> _rssCache;
@@ -18,22 +20,19 @@ class IsliebReader {
     return IsliebReader._(box)..loadRssFeed();
   }
 
-  static IsliebReader of(BuildContext context) => Provider.of<IsliebReader>(
-        context,
-        listen: false,
-      );
+  static IsliebReader of(BuildContext context) =>
+      Provider.of<IsliebReader>(context, listen: false);
 
-  Widget builder(BuildContext context, Widget? child) => Provider(
-        create: (_) => this,
-        child: child,
-      );
+  Widget builder(BuildContext context, Widget? child) =>
+      Provider(create: (_) => this, child: child);
 
   RssFeed? rssFeed;
 
   Future? isLoading;
 
-  void loadRssFeed() {
+  Future<void> loadRssFeed() async {
     isLoading = _loadRssFeed();
+    return isLoading;
   }
 
   Future<void> _loadRssFeed() async {
