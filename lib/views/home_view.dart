@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -38,6 +41,8 @@ class _HomeViewState extends State<HomeView> {
     IsliebReader.of(context).loadRssFeed();
   });
 
+  StreamSubscription? _onMessage;
+
   @override
   void initState() {
     _pageController.addListener(_updateDisplayBackButton);
@@ -47,11 +52,37 @@ class _HomeViewState extends State<HomeView> {
       }
       return msg;
     });
+    _onMessage = FirebaseMessaging.onMessage.listen((event) {
+      if (!mounted) return;
+
+      final title = event.notification?.title;
+      final body = event.notification?.body;
+      if (title == null) {
+        debugPrint(
+          'Received a notification in foreground but without title -> Ignore!',
+        );
+        return;
+      }
+      final message = body == null ? title : '$title\n$body';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: Duration(minutes: 2),
+          showCloseIcon: true,
+          content: SelectableText(message),
+        ),
+      );
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => FirebaseMessaging.instance.requestPermission(),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
+    _onMessage?.cancel();
     _pageController.removeListener(_updateDisplayBackButton);
     super.dispose();
   }
