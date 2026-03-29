@@ -9,8 +9,8 @@ extension LocalizedDate on DateTime {
       return 'Heute';
     }
     if (today.year == year) {
-      return DateFormat('dd.MM').format(this);
+      return DateFormat.MMMEd().format(this);
     }
-    return DateFormat('dd.MM.yyyy').format(this);
+    return DateFormat.yMMMEd().format(this);
   }
 }

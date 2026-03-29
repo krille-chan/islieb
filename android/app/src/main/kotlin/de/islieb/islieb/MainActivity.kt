@@ -1,4 +1,4 @@
-package de.islieb.app
+package de.islieb.comicreader
 
 import io.flutter.embedding.android.FlutterActivity
 

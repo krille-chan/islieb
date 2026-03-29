@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-
 import 'package:dynamic_color/dynamic_color.dart';
-
+import 'package:flutter/material.dart';
 import 'package:islieb/configs/app_constants.dart';
 import 'package:islieb/model/islieb_reader.dart';
 import 'package:islieb/views/home_view.dart';
