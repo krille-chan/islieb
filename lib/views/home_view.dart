@@ -70,7 +70,7 @@ class _HomeViewState extends State<HomeView> {
         onLinkTap: (String? url, Map<String, String> attributes, _) =>
             url == null
             ? null
-            : launchUrlString(url, mode: LaunchMode.externalApplication),
+            : launchUrlString(url),
         data:
             '<p>Comics and contents by <a href="https://islieb.de">islieb</a>.</p><p>App created with love by <a href="https://krille-chan.github.io/">Krille</a>.</p>',
       ),
@@ -203,7 +203,6 @@ class _HomeViewState extends State<HomeView> {
                                     ? null
                                     : launchUrlString(
                                         url,
-                                        mode: LaunchMode.externalApplication,
                                       ),
                                 style: AppThemes.htmlStyle,
                                 extensions: [
@@ -232,7 +231,6 @@ class _HomeViewState extends State<HomeView> {
                                     builder: (context) => OutlinedButton(
                                       onPressed: () => launchUrlString(
                                         context.attributes['src']!,
-                                        mode: LaunchMode.externalApplication,
                                       ),
                                       child: const Text('Audio abspielen'),
                                     ),
@@ -326,7 +324,6 @@ class _HomeViewState extends State<HomeView> {
                           OutlinedButton.icon(
                             onPressed: () => launchUrlString(
                               AppConstants.website,
-                              mode: LaunchMode.externalApplication,
                             ),
                             label: const Text(AppConstants.website),
                             icon: const Icon(Icons.open_in_new),
