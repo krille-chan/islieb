@@ -62,15 +62,14 @@ class _HomeViewState extends State<HomeView> {
     applicationIcon: Material(
       clipBehavior: Clip.hardEdge,
       shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(32)),
-      child: Image.asset(AppAssets.icon, width: 64, height: 64),
+      child: Image.asset(AppAssets.icon, width: 56, height: 56),
     ),
     children: [
       Html(
-        style: AppThemes.htmlStyle,
+        style: AppThemes.htmlStyle(Theme.of(context).colorScheme),
+
         onLinkTap: (String? url, Map<String, String> attributes, _) =>
-            url == null
-            ? null
-            : launchUrlString(url),
+            url == null ? null : launchUrlString(url),
         data:
             '<p>Comics and contents by <a href="https://islieb.de">islieb</a>.</p><p>App created with love by <a href="https://krille-chan.github.io/">Krille</a>.</p>',
       ),
@@ -80,6 +79,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     final isliebReader = IsliebReader.of(context);
+
     return FutureBuilder(
       future: isliebReader.isLoading,
       builder: (context, snapshot) {
@@ -97,6 +97,24 @@ class _HomeViewState extends State<HomeView> {
                       final pubDate = item.pubDate;
                       return Scaffold(
                         appBar: AppBar(
+                          centerTitle: true,
+                          leading: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Material(
+                              clipBehavior: Clip.hardEdge,
+                              shape: ContinuousRectangleBorder(
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: InkWell(
+                                onTap: _infoButtonAction,
+                                child: Image.asset(
+                                  AppAssets.icon,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              ),
+                            ),
+                          ),
                           title: searchMode
                               ? Autocomplete<(int, RssItem)>(
                                   optionsBuilder: (text) {
@@ -151,29 +169,23 @@ class _HomeViewState extends State<HomeView> {
                                         );
                                       },
                                 )
-                              : Row(
-                                  spacing: 12,
-                                  crossAxisAlignment: .center,
-                                  children: [
-                                    Material(
-                                      clipBehavior: Clip.hardEdge,
-                                      shape: ContinuousRectangleBorder(
-                                        borderRadius: BorderRadius.circular(32),
+                              : Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: item.title ?? 'Ohne Titel',
                                       ),
-                                      child: Image.asset(
-                                        AppAssets.icon,
-                                        width: 24,
-                                        height: 24,
-                                      ),
-                                    ),
-                                    Text(item.title ?? 'Ohne Titel'),
-                                    if (pubDate != null)
-                                      Text(
-                                        pubDate.getLocalizedDate(context),
-                                        style: TextStyle(fontSize: 11),
-                                      ),
-                                  ],
+                                      if (pubDate != null)
+                                        TextSpan(
+                                          text:
+                                              '\n${pubDate.getLocalizedDate(context)}',
+                                          style: TextStyle(fontSize: 11),
+                                        ),
+                                    ],
+                                  ),
+                                  textAlign: .center,
                                 ),
+
                           actions: searchMode
                               ? null
                               : [
@@ -201,10 +213,10 @@ class _HomeViewState extends State<HomeView> {
                                       _,
                                     ) => url == null
                                     ? null
-                                    : launchUrlString(
-                                        url,
-                                      ),
-                                style: AppThemes.htmlStyle,
+                                    : launchUrlString(url),
+                                style: AppThemes.htmlStyle(
+                                  Theme.of(context).colorScheme,
+                                ),
                                 extensions: [
                                   TagExtension(
                                     tagsToExtend: {'img'},
@@ -322,9 +334,8 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                           OutlinedButton.icon(
-                            onPressed: () => launchUrlString(
-                              AppConstants.website,
-                            ),
+                            onPressed: () =>
+                                launchUrlString(AppConstants.website),
                             label: const Text(AppConstants.website),
                             icon: const Icon(Icons.open_in_new),
                           ),
