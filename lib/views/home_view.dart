@@ -1,17 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:webfeed/domain/rss_item.dart';
-
 import 'package:islieb/configs/app_assets.dart';
 import 'package:islieb/configs/app_constants.dart';
 import 'package:islieb/configs/app_themes.dart';
 import 'package:islieb/model/islieb_reader.dart';
 import 'package:islieb/utils/localized_date.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:webfeed/domain/rss_item.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -191,7 +189,7 @@ class _HomeViewState extends State<HomeView> {
                                 ],
                         ),
                         body: RefreshIndicator.adaptive(
-                          onRefresh: () => isliebReader.loadRssFeed(),
+                          onRefresh: isliebReader.loadRssFeed,
                           child: ListView(
                             children: [
                               Html(
