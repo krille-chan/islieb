@@ -64,4 +64,5 @@ jobs:
           flutter-version-file: pubspec.yaml
           cache: true
       - run: flutter pub get
+      - run: cp ios/Runner/GoogleService-Info.dummy.plist ios/Runner/GoogleService-info.plist
       - run: flutter build ios --no-codesign
