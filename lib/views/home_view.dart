@@ -189,9 +189,7 @@ class _HomeViewState extends State<HomeView> {
                                                 searchMode = false;
                                               }),
                                             ),
-                                            hintText: MaterialLocalizations.of(
-                                              context,
-                                            ).searchFieldLabel,
+                                            hintText: 'Suche',
                                             filled: true,
                                             fillColor: Theme.of(
                                               context,
@@ -222,9 +220,7 @@ class _HomeViewState extends State<HomeView> {
                               : [
                                   IconButton(
                                     icon: Icon(Icons.search_outlined),
-                                    tooltip: MaterialLocalizations.of(
-                                      context,
-                                    ).searchFieldLabel,
+                                    tooltip: 'Suchen',
                                     onPressed: () => setState(() {
                                       searchMode = true;
                                     }),
@@ -383,9 +379,7 @@ class _HomeViewState extends State<HomeView> {
                     children: [
                       if (displayBackButton)
                         FloatingActionButton(
-                          tooltip: MaterialLocalizations.of(
-                            context,
-                          ).previousPageTooltip,
+                          tooltip: 'Zum Anfang',
                           mini: true,
                           backgroundColor: Theme.of(
                             context,
@@ -405,9 +399,7 @@ class _HomeViewState extends State<HomeView> {
                       Spacer(),
                       FloatingActionButton(
                         mini: true,
-                        tooltip: MaterialLocalizations.of(
-                          context,
-                        ).nextPageTooltip,
+                        tooltip: 'Nächste Seite',
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Theme.of(
                           context,
