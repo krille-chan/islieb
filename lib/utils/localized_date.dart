@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'package:intl/intl.dart';
-
 extension LocalizedDate on DateTime {
   String getLocalizedDate(BuildContext context) {
     final today = DateTime.now();
     if (today.day == day && today.month == month && today.year == year) {
       return 'Heute';
     }
+    final dayStr = day < 10 ? '0$day' : day.toString();
+    final monthStr = month < 10 ? '0$month' : month.toString();
     if (today.year == year) {
-      return DateFormat.MMMEd().format(this);
+      return '$dayStr.$monthStr';
     }
-    return DateFormat.yMMMEd().format(this);
+    return '$dayStr.$monthStr.$year';
   }
 }
